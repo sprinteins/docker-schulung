@@ -1,11 +1,10 @@
 from fastapi import FastAPI
-from fastapi.templating import Jinja2Templates
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 from pydantic import BaseModel
-
-# Testing
-word_list = []
+from db import engine, WordsDB
+from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 
 # Classes
 class Words(BaseModel):
@@ -22,17 +21,37 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-templates = Jinja2Templates(directory="templates")
 
 path = "/api/words"
 
 # Declare paths
 @app.get(path)
 def get_list_of_words():
+    word_list = []
+    with engine.connect() as conn:
+        result = conn.execute(WordsDB.select())
+        for row in result:
+            word_list.append({ "word": row.word, "length": row.length })
+            
     return word_list
 
-@app.post(path)
+@app.post(path, status_code=201)
 def add_word_to_list(words: Words):
-    for word in words.list:
-        word_list.append({ "word": word, "length": len(word) })
+    with engine.connect() as conn:
+        trans = conn.begin()
+        try:
+            for item in words.list:
+                lower_case = item.lower()
+                # Lookup if word is existing
+                stmt = select(WordsDB).where(WordsDB.c.word == lower_case)
+                result = conn.execute(stmt)
+
+                # Insert if not existing
+                if result.fetchone() is None:
+                    conn.execute(WordsDB.insert().values(word=lower_case, length=len(lower_case)))
+                
+            trans.commit()
+        except IntegrityError as e:
+            print("Error: ", e)
+            trans.rollback()
     return
