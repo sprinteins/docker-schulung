@@ -10,4 +10,4 @@ start-db: ## Starts PostgreSQL Database in with docker
 	@docker compose --file ./database/docker-compose.yaml up -d
 
 stop-db: ## Stop PostgreSQL Database
-	@docker compose --file ./database/docker-compose.yaml down -d
+	@docker compose --file ./database/docker-compose.yaml down
