@@ -4,6 +4,7 @@
 ### Requirements
 - [Python](https://www.python.org/downloads/)
 - [Docker](https://www.docker.com/products/docker-desktop/)
+- Postgresql: Local postgresql installation required for sqlalchamy
 - Optional for commands:
   - build-essentials For Linux / WSL2:
     ```shell
