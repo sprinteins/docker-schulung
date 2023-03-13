@@ -7,7 +7,7 @@ help:
 ### Backend ###
 ################
 run-backend: ## Starts uvicorn server on Port 3000
-	@cd ./backend && python -m uvicorn main:app --reload --port 3000
+	@cd ./backend && python3 -m uvicorn main:app --reload --port 3000
 
 ################
 ### Database ###
@@ -22,4 +22,4 @@ stop-db: ## Stop PostgreSQL Database
 ### Frontend ###
 ################
 run-frontend: ## Starts uvicorn server on Port 8080
-	@cd ./frontend && python -m uvicorn main:app --reload --port 8080
+	@cd ./frontend && python3 -m uvicorn main:app --reload --port 8080
